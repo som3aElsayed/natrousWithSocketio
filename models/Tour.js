@@ -1,7 +1,7 @@
 const slugify = require("slugify");
-const Mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-const tourSchema = new Mongoose.Schema(
+const tourSchema = new mongoose.Schema(
   {
     imageCover: {
       type: Object,
@@ -59,14 +59,29 @@ const tourSchema = new Mongoose.Schema(
     },
     slugify: String,
     __v: { type: Number, select: false },
+    // reviews: [{ type: mongoose.Schema.ObjectId, ref: "Review" }],
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 tourSchema.pre("save", function (next) {
   this.slugify = slugify(this.name, { lower: true });
   next();
 });
 
-const Tour = Mongoose.model("Tour", tourSchema);
+// Virtual populate
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour",
+  localField: "_id",
+});
+
+tourSchema.index({ price: 1 });
+tourSchema.index({ slug: 1 });
+const Tour = mongoose.model("Tour", tourSchema);
 
 module.exports = Tour;

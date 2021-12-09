@@ -26,8 +26,8 @@ exports.login = catchAsync(async function (req, res, next) {
     return next(new AppError("Please provide email and passowrd!", 400));
   }
   // check if the user exists
-  // check if password correction
   const user = await User.findOne({ email });
+  // check if password correction
   if (!user || !(await user.isValidPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password!", 401));
   }
@@ -64,6 +64,7 @@ exports.authProtection = catchAsync(async function (req, res, next) {
   if (!currentuser) {
     return next(new AppError("The User Belong to This Token no longer exist."));
   }
+  // check if password has changed ..
   req.user = currentuser;
   next();
 });
@@ -160,4 +161,26 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   res
     .status(200)
     .json({ status: "Password Changed Successfuly", token, data: { user } });
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      const decode = await jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      // check if still exists
+      const currentUser = await User.findById(decode.id);
+      if (!currentUser) return next();
+      // check if the user change his password
+
+      // if(currentUser.changePasswordAfter(decode.iat))
+      req.user = currentUser;
+      return next();
+    } catch (error) {
+      return next();
+    }
+  }
+  return next();
+});
+exports.allowUser = catchAsync(async (req, res, next) => {
+  res.status(200).json({ user: req.user ? req.user : "" });
 });

@@ -91,5 +91,6 @@ userSchema.methods.createResetPasswordToken = function () {
 
   return resetHash;
 };
+
 const User = Mongoose.model("User", userSchema);
 module.exports = User;

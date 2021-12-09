@@ -11,7 +11,11 @@ module.exports.getAllTours = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
   const doc = await features.tours;
-  res.status(200).json({ ToursNumber: doc.length, success: doc });
+  res.status(200).json({
+    ToursNumber: doc.length,
+    success: doc,
+    user: req.user ? req.user : "",
+  });
 });
 
 module.exports.multerMultiFiles = uploadMulter().fields([
@@ -50,15 +54,14 @@ module.exports.getTour = catchAsync(async (req, res, next) => {
   if (theId) theId = { slugify: req.params.id };
   else theId = { _id: req.params.id };
 
-  const tour = await Tour.find(theId);
+  const tour = await Tour.find(theId).populate("reviews");
 
   if (!tour) {
     return next(new AppError("No Document Found With that Ip", 404));
   }
-  res.status(200).json({
-    success: "success",
-    tour,
-  });
+  res
+    .status(200)
+    .json({ success: "success", tour, user: req.user ? req.user : "" });
 });
 module.exports.deleteTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndRemove(req.params.id);

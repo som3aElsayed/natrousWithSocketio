@@ -1,11 +1,14 @@
 const express = require("express");
 const tourController = require("../controllers/tourController.js");
 const router = express.Router();
+const reviewsRoute = require("../routes/reviewsRoute");
 const authController = require("../controllers/authController");
+
+router.use("/:tourId/reviews", reviewsRoute);
 
 router
   .route("/")
-  .get(tourController.getAllTours)
+  .get(authController.isLoggedIn, tourController.getAllTours)
   .post(
     authController.authProtection,
     authController.restirected("admin"),
@@ -15,7 +18,7 @@ router
   );
 router
   .route("/:id")
-  .get(tourController.getTour)
+  .get(authController.isLoggedIn, tourController.getTour)
   .patch(
     authController.authProtection,
     authController.restirected("admin"),

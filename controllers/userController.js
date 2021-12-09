@@ -47,14 +47,15 @@ exports.updateMe = catchAsync(async function (req, res, next) {
   if (name) user.name = name;
   if (email) user.email = email;
   // for upload image file
-  const { image, pathFile } = req.image;
-  user.photo = image.secure_url;
-  user.user_cloudinary_Id = image.public_id;
-  deleteTheCreatedFile(pathFile);
+  if (req.image) {
+    const { image, pathFile } = req.image;
+    user.photo = image.secure_url;
+    user.user_cloudinary_Id = image.public_id;
+    deleteTheCreatedFile(pathFile);
 
-  const images = req.images;
-  user.images = images;
-
+    const images = req.images;
+    user.images = images;
+  }
   await user.save({ validateBeforeSave: false });
   res.status(200).json({
     status: "success",

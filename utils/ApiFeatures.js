@@ -20,7 +20,6 @@ class ApiFeatures {
   sort() {
     if (this.query.sort) {
       const sortBy = this.query.sort.split(",").join(" ");
-      console.log(sortBy);
       this.tours = this.tours.sort(sortBy);
     } else {
       this.tours = this.tours.sort("-createdAt");
