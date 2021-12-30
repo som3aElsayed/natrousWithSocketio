@@ -6,11 +6,9 @@ const crypto = require("crypto");
 const userSchema = new Mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name Must Be Provided"],
   },
   password: {
     type: String,
-    required: [true, "Password Must Be Provided"],
     minlength: 8,
   },
   email: {
@@ -18,12 +16,9 @@ const userSchema = new Mongoose.Schema({
     trim: true,
     lowercase: true,
     unique: true,
-    required: [true, "Email required"],
-    validate: [isEmail, "Please Provide a Valid Email"],
   },
   passwordConfirm: {
     type: String,
-    required: [true, "Please confirm your password"],
     validate: {
       validator: function (el) {
         if (el !== this.password) return false;
@@ -35,7 +30,6 @@ const userSchema = new Mongoose.Schema({
   user_cloudinary_Id: String,
   role: {
     type: String,
-    enum: ["user", "guid", "lead-guide", "admin"],
     default: "user",
   },
   passwordResetToken: String,
@@ -91,6 +85,6 @@ userSchema.methods.createResetPasswordToken = function () {
 
   return resetHash;
 };
-
 const User = Mongoose.model("User", userSchema);
+
 module.exports = User;

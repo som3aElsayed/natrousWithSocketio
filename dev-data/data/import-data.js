@@ -1,6 +1,8 @@
 const Tour = require("../../models/Tour");
 const mongoose = require("mongoose");
 const fs = require("fs");
+const User = require("../../models/User");
+const Review = require("../../models/Review");
 require("dotenv").config();
 
 const DB = process.env.DATABASE_EMAIL.replace(
@@ -13,11 +15,11 @@ mongoose
   })
   .then(() => console.log("DB connection successful!"));
 
-const TourFile = fs.readFileSync(`${__dirname}/tours.json`, "utf-8");
+const TourFile = fs.readFileSync(`${__dirname}/users.json`, "utf-8");
 
 const importData = async () => {
   try {
-    await Tour.create(JSON.parse(TourFile));
+    const users = await User.insertMany(JSON.parse(TourFile));
     console.log("Updated Tour");
   } catch (error) {
     console.log(error);
@@ -26,7 +28,7 @@ const importData = async () => {
 
 const deltedData = async () => {
   try {
-    await Tour.deleteMany();
+    await User.deleteMany();
     console.log("Updated Tour");
   } catch (error) {
     console.log(error);

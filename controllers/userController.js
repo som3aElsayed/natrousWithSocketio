@@ -5,10 +5,13 @@ const { uploadMulter, adjustifyOneImage } = require("../utils/uploadMulter");
 const AppError = require("../utils/AppError");
 
 exports.getAllUsers = catchAsync(async function (req, res, next) {
-  res.status(200).json({ status: "all user for logged in" });
+  const users = await User.find({});
+  res.status(200).json({ status: "success", users });
 });
 exports.getUser = catchAsync(async function (req, res, next) {
-  res.status(200).json({ status: "success" });
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(404).json({ status: "NotFound" });
+  res.status(200).json({ status: "success", user });
 });
 exports.updateUser = catchAsync(async function (req, res, next) {
   res.status(200).json({ status: "success" });
@@ -27,10 +30,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.uploadSinglePhoto = uploadMulter().fields([
-  { name: "imageCover", maxCount: 1 },
-  { name: "images", maxCount: 3 },
-]);
+exports.uploadSinglePhoto = uploadMulter().single("photo");
 exports.adjustifyUploadImage = () => adjustifyOneImage(500, 500, "users");
 
 exports.updateMe = catchAsync(async function (req, res, next) {

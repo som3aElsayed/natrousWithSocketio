@@ -53,12 +53,26 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Price at Least needs to be 1"],
     },
+    startDates: {
+      type: [String],
+      required: [true, "Should have date"],
+    },
     duration: {
       type: Number,
       required: [true, "A tour must have a duration"],
     },
+    description: {
+      type: String,
+      required: [true, "A tour must have a description"],
+    },
     slugify: String,
     __v: { type: Number, select: false },
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
     // reviews: [{ type: mongoose.Schema.ObjectId, ref: "Review" }],
   },
   {
@@ -68,6 +82,10 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+tourSchema.index({ price: 1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.pre("save", function (next) {
   this.slugify = slugify(this.name, { lower: true });
   next();
@@ -80,8 +98,15 @@ tourSchema.virtual("reviews", {
   localField: "_id",
 });
 
-tourSchema.index({ price: 1 });
-tourSchema.index({ slug: 1 });
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides",
+    select: "-__v -passwordChangedAt -password",
+  }).populate("reviews");
+
+  next();
+});
+
 const Tour = mongoose.model("Tour", tourSchema);
 
 module.exports = Tour;

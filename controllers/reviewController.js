@@ -18,7 +18,7 @@ exports.createReview = catchAsync(async (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
   if (!req.body.user) req.body.user = req.user._id;
 
-  if (!req.body.tour || req.body.user) {
+  if (!req.body.user) {
     return res
       .status(401)
       .json({ failed: "for god' Sake  tour and user required" });

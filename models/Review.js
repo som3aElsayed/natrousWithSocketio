@@ -54,6 +54,10 @@ reviewsSchema.statics.calcAverageRatings = async function (tourId) {
 reviewsSchema.post("save", function () {
   this.constructor.calcAverageRatings(this.tour);
 });
+reviewsSchema.pre("find", function (next) {
+  this.populate({ path: "user", select: "name photo role" });
+  next();
+});
 
 reviewsSchema.post(/^findOneAnd/, async function (doc) {
   await doc.constructor.calcAverageRatings(doc.tour);

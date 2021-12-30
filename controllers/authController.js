@@ -94,7 +94,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     // const resetUrl = `${req.protocol}://${req.get(
     //   "host"
     // )}/api/v1/users/reset-password/${resetToken}`;
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
 
     await new Email(
       user,
@@ -158,9 +158,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   user.password = undefined;
 
-  res
-    .status(200)
-    .json({ status: "Password Changed Successfuly", token, data: { user } });
+  res.status(200).json({ status: "Password Changed Successfuly", user });
 });
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {

@@ -19,6 +19,7 @@ exports.uploadMulter = () => {
 
 exports.adjustifyOneImage = (width, height, tourOrUserFile) =>
   catchAsync(async (req, res, next) => {
+    console.log("thers is no", { reqFiles: req.file, body: req.body });
     if (!req.file) return next();
     const userId = req.user.id;
 
